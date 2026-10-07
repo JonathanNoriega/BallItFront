@@ -1,0 +1,42 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Capa de datos completa: modelos TypeScript, mocks JSON realistas (3-4 tiros con mezcla de veredictos), lógica pura (overlay.ts, streak.ts, score.ts), servicios Angular con fallback a mocks, estado global RxJS, y el proceso Electron (main.ts + preload.ts). Depende de FEAT-001 (project scaffold). Independiente de FEAT-003 (páginas).",
+  "status": "pending",
+  "steps": [
+    "Crear src/app/models/analyze.model.ts con interfaces TypeScript que mapean exactamente el contrato del backend: AnalysisConfig, AnalysisVideo, AnalysisQuality, AnalysisRule, ShotFrames, ShotTimesS, Shot, AnalysisSummary, FrameData, AnalysisResult. Tipos estrictos: verdict es 'bueno'|'dudoso'|'malo', arm es 'right'|'left', camera es 'frente', focus es 'completo'. FrameData.p es [number,number][] de longitud 12.",
+    "Crear src/app/models/history.model.ts con HistoryItem (lista) y HistoryDetail (= AnalysisResult). HistoryItem tiene: analysis_id, created_at, config (parcial), summary (parcial), frame_url.",
+    "Crear src/app/models/compare.model.ts con CompareRequest { id_a, id_b } y CompareResult { id_a, id_b, delta_score, delta_mean, verdict, shots_a, shots_b, summary_a, summary_b }.",
+    "Crear src/app/mocks/fixtures/analyze-result.mock.json con un análisis realista de 4 tiros: tiro 1 bueno (score 93, value 15.46), tiro 2 bueno (score 80, value 20.1), tiro 3 dudoso (score 60, value 28.3), tiro 4 malo (score 25, value 47.8). Incluir al menos 20 frames con landmarks normalizados plausibles (persona parada, posición de tiro libre). analysis_id: '00000000-0000-4000-8000-000000000001'. Todos los campos del contrato presentes.",
+    "Crear src/app/mocks/fixtures/history.mock.json con array de 3 HistoryItems correspondientes a análisis distintos (IDs 001, 002, 003) con fechas en los últimos 7 días, scores variados (93, 60, 45) para que la racha y el comparador tengan sentido.",
+    "Crear src/app/mocks/fixtures/compare.mock.json con CompareResult comparando el análisis 002 (score 60) contra el 001 (score 93), delta_score: +33, delta_mean: -12.84, verdict: 'mejora'.",
+    "Crear src/app/lib/score.ts con: función getScoreColor(score: number): string (retorna '#22C55E' si >=70, '#EAB308' si >=40, '#EF4444' si <40), función getScoreLabel(score: number): string ('Buena alineación' / 'Alineación moderada' / 'Codo muy abierto'), función getVerdictColor(verdict: 'bueno'|'dudoso'|'malo'): string.",
+    "Crear src/app/lib/streak.ts con: función calculateStreak(history: HistoryItem[]): number que cuenta días consecutivos con al menos un análisis hasta hoy (ordenar por created_at descendente, comparar solo la parte de fecha).",
+    "Crear src/app/lib/overlay.ts con la clase OverlayRenderer. Constructor recibe canvas: HTMLCanvasElement. Método draw(frame: FrameData, arm: 'right'|'left', showSkeleton: boolean, showAngles: boolean, showTrail: boolean): void. Internamente: escala coordenadas 0-1 a píxeles del canvas, dibuja líneas de esqueleto (conexiones definidas como pares de índices de landmarks: hombros[0-1], hombro-codo[0-2, 1-3], codo-muñeca[2-4, 3-5], hombro-cadera[0-6, 1-7], cadera-cadera[6-7], cadera-rodilla[6-8, 7-9], rodilla-tobillo[8-10, 9-11]), resalta el brazo de tiro en brand-orange más grueso, dibuja arco de ángulo en el hombro del brazo de tiro, muestra etiqueta con grados coloreada según semáforo. Método clear(): void. Método resize(w: number, h: number): void para ajustar canvas al contenedor.",
+    "Crear src/app/state/session-config.service.ts con BehaviorSubject<SessionConfig> donde SessionConfig = { arm: 'right'|'left', camera: 'frente', focus: 'completo', goal: string|null }. Valor inicial: arm 'right'. Métodos updateConfig(partial) y getConfig().",
+    "Crear src/app/state/app-state.service.ts con: BehaviorSubject<HistoryItem[]> para historial (cargado desde history.service), BehaviorSubject<number> para racha (calculada con streak.ts), BehaviorSubject<string> para userId (UUID anónimo). En el constructor: leer userId desde window.electronAPI.getStoreValue('user_id') si existe, sino generar UUID con crypto.randomUUID() y guardarlo; si electronAPI no existe (fallback web), usar localStorage. Exponer userId$, history$, streak$ como Observables.",
+    "Crear electron/main.ts: importar electron (BrowserWindow, app, ipcMain, dialog), electron-store (ESM — usar import() dinámico o await import('electron-store')). Crear ventana 1280x800, webPreferences: preload path, contextIsolation true, nodeIntegration false. En dev cargar http://localhost:4200; en prod cargar dist/ballitfront/index.html como file://. Registrar handlers IPC: 'open-file-dialog' → dialog.showOpenDialog con filtros de video (mp4, mov, m4v, avi, mkv) → retornar filePaths[0]. 'store-get' → store.get(key). 'store-set' → store.set(key, value). 'store-delete' → store.delete(key).",
+    "Crear electron/preload.ts: usar contextBridge.exposeInMainWorld('electronAPI', { openFileDialog: () => ipcRenderer.invoke('open-file-dialog'), getStoreValue: (key) => ipcRenderer.invoke('store-get', key), setStoreValue: (key, val) => ipcRenderer.invoke('store-set', key, val), deleteStoreValue: (key) => ipcRenderer.invoke('store-delete', key) }). Tipado correcto con declare global { interface Window { electronAPI: ElectronAPI } }.",
+    "Crear src/app/services/analyze.service.ts: inyectar HttpClient. Método submitAnalysis(file: File, config: SessionConfig, userId: string): Observable<{analysis_id:string}> — construye FormData con video, arm, camera, focus, añade trim si existen, hace POST /analyze con header X-User-Id. Método pollResult(id: string, userId: string): Observable<AnalysisResult> — hace GET /analyze/{id} con header, usa timer + switchMap para polling cada 2s, filtra hasta que result.status === 'done' (o el objeto no tenga status, es decir ya es el result completo), completa con take(1). Fallback: si el backend falla (catchError), retornar el mock analyze-result.mock.json importado.",
+    "Crear src/app/services/history.service.ts: métodos getHistory(userId): Observable<HistoryItem[]> — GET /history con header, catchError → mock history.mock.json. getDetail(id, userId): Observable<AnalysisResult> — GET /history/{id}, catchError → mock del analyze-result.",
+    "Crear src/app/services/compare.service.ts: método compare(idA, idB, userId): Observable<CompareResult> — POST /compare con body y header, catchError → mock compare.mock.json.",
+    "Crear src/app/services/advice.service.ts: método getAdvice(shot: Shot, rule: AnalysisRule): string — función pura (sin HTTP, Groq viene del backend). Genera frase local según verdict: bueno → 'Tu codo está bien alineado ({value}°). ¡Sigue así!', dudoso → 'Tu codo se abre un poco ({value}°); lo ideal es menos de {rule.t}°.', malo → 'Tu codo se separa {value}° del torso; lo ideal es menos de {rule.t}°. Intenta mantenerlo más pegado al cuerpo.'.",
+    "Crear src/app/app.config.ts con provideRouter(routes), provideHttpClient(withFetch()), provideAnimations() — usando la API standalone de Angular 18.",
+    "Crear src/app/app.routes.ts con las rutas: '' → InicioComponent, 'configuracion' → ConfiguracionComponent, 'subir' → SubirGrabarComponent, 'recortar' → RecortarFragmentoComponent, 'procesando/:id' → ProcesandoComponent, 'resultados/:id' → ResultadosComponent, 'tiro/:id/:shotIdx' → FrameDelTiroComponent, 'historial' → HistorialGuardadoComponent, 'comparar' → CompararComponent. Usar loadComponent con lazy loading para cada una.",
+    "Crear src/main.ts bootstrap standalone: bootstrapApplication(AppComponent, appConfig).catch(console.error).",
+    "Crear src/app/app.component.ts standalone con selector 'app-root', template '<router-outlet />', imports [RouterOutlet]."
+  ],
+  "acceptance_criteria": [
+    "npm run build completa sin errores TypeScript después de implementar este FEAT.",
+    "Los mocks JSON son válidos JSON y sus campos corresponden exactamente a las interfaces de models/.",
+    "overlay.ts exporta la clase OverlayRenderer con los métodos draw, clear, resize sin dependencias Angular.",
+    "streak.ts y score.ts son funciones puras sin imports de Angular.",
+    "Los servicios retornan Observable<T> y nunca exponen HttpClient directamente.",
+    "electron/main.ts y electron/preload.ts compilan con tsc -p tsconfig.electron.json sin errores."
+  ],
+  "verification": [
+    "cd /home/noriega/Documents/coding/pmc/BallItFront && npm run build 2>&1 | tail -30"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

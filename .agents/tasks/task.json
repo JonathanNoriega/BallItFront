@@ -1,0 +1,7 @@
+{
+  "task_id": "task-ballit-full-build",
+  "task_description": "Construir desde cero la app de escritorio BallIt (Electron + Angular 18 standalone) que permite a un jugador subir un video de tiro libre, enviarlo al backend Python/MediaPipe, y ver el análisis con overlay de esqueleto + ángulos sobre el video.",
+  "status": "pending",
+  "feature_order": ["FEAT-001", "FEAT-002", "FEAT-003", "FEAT-004", "FEAT-005"],
+  "blocked_reason": null
+}

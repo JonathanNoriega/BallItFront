@@ -1,0 +1,20 @@
+{
+  "id_a": "mock-analysis-001",
+  "id_b": "mock-analysis-003",
+  "delta_score": 16,
+  "delta_mean": -9.9,
+  "verdict": "mejora",
+  "summary_a": { "n": 4, "mean": 25.2, "score": 74, "sd": 10.3, "n_bueno": 2, "n_dudoso": 1, "n_malo": 1, "pct_bueno": 50.0, "pct_pausa": 50.0 },
+  "summary_b": { "n": 3, "mean": 35.4, "score": 58, "sd": 8.1, "n_bueno": 1, "n_dudoso": 0, "n_malo": 2, "pct_bueno": 33.3, "pct_pausa": 33.3 },
+  "shots_a": [
+    { "n": 1, "value": 15.5, "score": 93, "verdict": "bueno", "has_pause": true, "pause_s": 0.22, "frames": { "start": 5, "set": 18, "release": 28, "prep": 14, "peak": 25 }, "times_s": { "set": 0.64, "release": 1.0 }, "frame_url": null, "clip_url": null },
+    { "n": 2, "value": 28.3, "score": 71, "verdict": "dudoso", "has_pause": false, "pause_s": 0.0, "frames": { "start": 35, "set": 48, "release": 58, "prep": 44, "peak": 55 }, "times_s": { "set": 1.71, "release": 2.07 }, "frame_url": null, "clip_url": null },
+    { "n": 3, "value": 38.9, "score": 45, "verdict": "malo", "has_pause": false, "pause_s": 0.0, "frames": { "start": 65, "set": 78, "release": 88, "prep": 74, "peak": 85 }, "times_s": { "set": 2.78, "release": 3.14 }, "frame_url": null, "clip_url": null },
+    { "n": 4, "value": 18.2, "score": 88, "verdict": "bueno", "has_pause": true, "pause_s": 0.18, "frames": { "start": 95, "set": 106, "release": 115, "prep": 102, "peak": 112 }, "times_s": { "set": 3.78, "release": 4.1 }, "frame_url": null, "clip_url": null }
+  ],
+  "shots_b": [
+    { "n": 1, "value": 24.8, "score": 72, "verdict": "dudoso", "has_pause": false, "pause_s": 0.0, "frames": { "start": 5, "set": 18, "release": 28, "prep": 14, "peak": 25 }, "times_s": { "set": 0.64, "release": 1.0 }, "frame_url": null, "clip_url": null },
+    { "n": 2, "value": 36.5, "score": 52, "verdict": "malo", "has_pause": false, "pause_s": 0.0, "frames": { "start": 35, "set": 48, "release": 58, "prep": 44, "peak": 55 }, "times_s": { "set": 1.71, "release": 2.07 }, "frame_url": null, "clip_url": null },
+    { "n": 3, "value": 44.8, "score": 38, "verdict": "malo", "has_pause": false, "pause_s": 0.0, "frames": { "start": 65, "set": 78, "release": 88, "prep": 74, "peak": 85 }, "times_s": { "set": 2.78, "release": 3.14 }, "frame_url": null, "clip_url": null }
+  ]
+}

@@ -1,0 +1,23 @@
+[
+  {
+    "analysis_id": "mock-analysis-001",
+    "created_at": "2026-10-06T18:30:00-05:00",
+    "config": { "arm": "right", "camera": "frente", "focus": "completo" },
+    "summary": { "n": 4, "mean": 25.2, "score": 74, "n_bueno": 2, "n_dudoso": 1, "n_malo": 1 },
+    "frame_url": null
+  },
+  {
+    "analysis_id": "mock-analysis-002",
+    "created_at": "2026-10-05T17:15:00-05:00",
+    "config": { "arm": "right", "camera": "frente", "focus": "completo" },
+    "summary": { "n": 3, "mean": 30.8, "score": 65, "n_bueno": 1, "n_dudoso": 1, "n_malo": 1 },
+    "frame_url": null
+  },
+  {
+    "analysis_id": "mock-analysis-003",
+    "created_at": "2026-10-04T16:00:00-05:00",
+    "config": { "arm": "right", "camera": "frente", "focus": "completo" },
+    "summary": { "n": 3, "mean": 35.4, "score": 58, "n_bueno": 1, "n_dudoso": 0, "n_malo": 2 },
+    "frame_url": null
+  }
+]

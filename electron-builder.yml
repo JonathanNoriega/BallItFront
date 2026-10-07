@@ -1,0 +1,22 @@
+appId: com.ballit.app
+productName: BallIt
+
+directories:
+  buildResources: assets
+  output: dist/electron
+
+files:
+  - dist/ballitfront/**/*
+  - dist-electron/**/*
+
+extraMetadata:
+  main: dist-electron/electron/main.js
+
+linux:
+  target: AppImage
+
+win:
+  target: nsis
+
+mac:
+  target: dmg

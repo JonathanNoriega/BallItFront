@@ -1,0 +1,30 @@
+{
+  "id": "FEAT-005",
+  "type": "feat",
+  "description": "Polish final: estilos visuales completos según design system (brand-orange, navy, cream, semáforo, cards, botones 52px), smoke-test de flujo completo con datos mock, y verificación de que la app arranca en Electron. Depende de todos los FEATs anteriores.",
+  "status": "pending",
+  "steps": [
+    "Revisar y completar src/styles.scss: Variables CSS globales (--brand-orange: #FF5A1F, --navy: #1B2B4B, --cream: #FAFAF7, --verde: #22C55E, --amarillo: #EAB308, --rojo: #EF4444). Estilos de tarjetas (border-radius 16px, box-shadow 0 2px 12px rgba(0,0,0,0.08)). Botones primarios (background brand-orange, color white, border-radius 999px, min-height 52px, padding 0 24px, font-size 16px, font-weight 600, border none, cursor pointer). Tipografía: font-size base 16px, todos los textos >=14px. Asegurar que .phone-frame tiene max-width 430px centrado con sombra lateral sutil en ventanas grandes.",
+    "Completar los estilos inline o en archivos .scss de cada componente compartido: action-bar con position fixed bottom 0, z-index 100, background white, padding 16px, border-top 1px solid #eee; verdict-chip con estilos de pill; angle-badge con pill coloreado; metric-card con la card visual completa; advice-card con el expand/collapse animado.",
+    "Aplicar estilos a todas las páginas: P1 Inicio — logo grande centrado, streak-badge en top, botón enorme; P6 Resultados — video con overlay es el hero visual, sección de puntaje con círculo grande coloreado, cards de métricas con separación clara; P5 Procesando — centrado, barra de progreso brand-orange, animación; P3 Subir — zona de drop con borde punteado brand-orange, icono de video.",
+    "Verificar que el chart de comparación en P9 (ng2-charts BarChart) muestra correctamente con provideCharts(withDefaultRegisterables()) en app.config.ts (requerido por ng2-charts v6 standalone).",
+    "Hacer smoke-test del flujo demo completo: al arrancar la app en modo dev, la ruta '/' carga P1 Inicio con datos mock (streak desde history.mock.json). Navegar manualmente a '/resultados/00000000-0000-4000-8000-000000000001' carga el análisis mock y muestra el overlay. Si AnalyzeService no puede conectar al backend, el fallback a mock debe activarse automáticamente.",
+    "Verificar que en dist-electron/ hay main.js compilado y que electron puede arrancar: npm run build && electron dist-electron/electron/main.js (debe abrir ventana, aunque muestre archivo local). Corregir cualquier error de module resolution en el proceso main (principalmente importación ESM de electron-store — usar workaround: const Store = (await import('electron-store')).default; dentro de una función async).",
+    "Crear README.md actualizado con instrucciones de instalación y arranque: npm install --legacy-peer-deps, cp .env.example .env (con VITE_API_BASE_URL=http://localhost:8000), npm run electron:dev. Mencionar que requiere el backend BallItMVP corriendo en :8000.",
+    "Crear .env.example en la raíz con VITE_API_BASE_URL=http://localhost:8000.",
+    "Agregar wait-on a devDependencies (npm install --save-dev wait-on@8.0.1) si no fue incluido en FEAT-001, necesario para el script electron:dev."
+  ],
+  "acceptance_criteria": [
+    "npm run build completa sin errores ni warnings de TypeScript.",
+    "La app muestra el design system correcto: brand-orange, navy, cream, botones >= 52px, cards con border-radius 16px.",
+    "La ruta /resultados/00000000-0000-4000-8000-000000000001 carga con datos del mock cuando el backend no está disponible.",
+    "ng2-charts BarChart en P9 renderiza sin errores de consola.",
+    "El proceso Electron arranca y carga la ventana correctamente."
+  ],
+  "verification": [
+    "cd /home/noriega/Documents/coding/pmc/BallItFront && npm run build 2>&1 | tail -30",
+    "cd /home/noriega/Documents/coding/pmc/BallItFront && node -e \"const {execSync} = require('child_process'); try { execSync('tsc -p tsconfig.electron.json --noEmit', {stdio:'inherit'}); console.log('Electron TS OK'); } catch(e) { process.exit(1); }\""
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

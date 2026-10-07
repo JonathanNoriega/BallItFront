@@ -1,0 +1,41 @@
+{
+  "name": "ballitfront",
+  "version": "0.1.0",
+  "private": true,
+  "main": "dist-electron/main.js",
+  "scripts": {
+    "start": "ng serve",
+    "build": "ng build && tsc -p tsconfig.electron.json",
+    "electron:compile": "tsc -p tsconfig.electron.json",
+    "electron:dev": "npm run electron:compile && concurrently \"ng serve\" \"wait-on http://localhost:4200 && NODE_ENV=development electron dist-electron/main.js\"",
+    "electron:build": "npm run build && electron-builder"
+  },
+  "dependencies": {
+    "@angular/animations": "18.2.13",
+    "@angular/common": "18.2.13",
+    "@angular/compiler": "18.2.13",
+    "@angular/core": "18.2.13",
+    "@angular/forms": "18.2.13",
+    "@angular/platform-browser": "18.2.13",
+    "@angular/platform-browser-dynamic": "18.2.13",
+    "@angular/router": "18.2.13",
+    "chart.js": "4.4.4",
+    "electron-store": "10.0.0",
+    "ng2-charts": "6.0.1",
+    "rxjs": "7.8.1",
+    "zone.js": "0.14.10"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "18.2.12",
+    "@angular/cli": "18.2.12",
+    "@angular/compiler-cli": "18.2.13",
+    "@types/electron": "1.6.10",
+    "@types/node": "22.9.0",
+    "concurrently": "9.0.1",
+    "electron": "32.3.3",
+    "electron-builder": "25.1.8",
+    "ts-node": "10.9.2",
+    "typescript": "5.4.5",
+    "wait-on": "8.0.1"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "id": "FEAT-001",
+  "type": "chore",
+  "description": "Scaffolding completo del proyecto: package.json con todas las dependencias pinadas, angular.json, tsconfigs, environments, index.html, styles.scss, electron-builder.yml, .gitignore, y scripts de arranque dev+build. Sin este armazón ningún otro FEAT puede compilar.",
+  "status": "pending",
+  "steps": [
+    "Crear package.json en la raíz con: dependencies — @angular/core@18.2.13, @angular/common@18.2.13, @angular/forms@18.2.13, @angular/router@18.2.13, @angular/platform-browser@18.2.13, @angular/platform-browser-dynamic@18.2.13, @angular/animations@18.2.13, @angular/compiler@18.2.13, rxjs@7.8.1, zone.js@0.14.10, electron-store@10.0.0, ng2-charts@6.0.1, chart.js@4.4.4, electron@32.3.3; devDependencies — @angular/cli@18.2.12, @angular/compiler-cli@18.2.13, @angular-devkit/build-angular@18.2.12, typescript@5.4.5, electron-builder@25.1.8, concurrently@9.0.1, ts-node@10.9.2, @types/node@22.9.0, @types/electron@1.6.10. Scripts: 'start': 'ng serve', 'build': 'ng build && tsc -p tsconfig.electron.json', 'electron:dev': 'concurrently \\'ng serve\\' \\'wait-on http://localhost:4200 && electron dist-electron/electron/main.js\\'', 'electron:build': 'npm run build && electron-builder'.",
+    "Crear angular.json configurando el proyecto 'ballitfront' con builder '@angular-devkit/build-angular:application', outputPath 'dist/ballitfront', index 'src/index.html', browser 'src/main.ts', tsConfig 'tsconfig.app.json', inlineStyleLanguage 'scss', styles ['src/styles.scss'], assets ['src/assets'], budgets iniciales relajados (5mb initial, 3mb initial-warning).",
+    "Crear tsconfig.json base con target ES2022, module ES2022, lib [ES2022, dom], strict true, experimentalDecorators true, emitDecoratorMetadata true, resolveJsonModule true, esModuleInterop true, skipLibCheck true.",
+    "Crear tsconfig.app.json extendiendo tsconfig.json con files ['src/main.ts'] e include ['src/**/*.d.ts'].",
+    "Crear tsconfig.electron.json con outDir 'dist-electron', module CommonJS (Electron main process necesita CJS), target ES2022, include ['electron/**/*.ts'], resolveJsonModule true, esModuleInterop true, skipLibCheck true.",
+    "Crear environments/environment.ts con: export const environment = { production: false, apiBaseUrl: (globalThis as any)['process']?.env?.['VITE_API_BASE_URL'] ?? 'http://localhost:8000' };",
+    "Crear environments/environment.prod.ts con production: true y mismo apiBaseUrl.",
+    "Crear src/index.html con <base href='/'>, charset UTF-8, viewport meta, CSP meta permisiva para dev, <app-root></app-root>.",
+    "Crear src/styles.scss con: variables CSS (--brand-orange, --navy, --cream, --white, colores semáforo), reset box-sizing, body background cream, font-family system-ui, tipografía base 16px, utilidades .phone-frame (max-width 430px, margin 0 auto, min-height 100vh, background white, position relative, overflow-x hidden).",
+    "Crear electron-builder.yml con appId 'com.ballit.app', productName 'BallIt', directories.buildResources 'assets', directories.output 'dist/electron', files ['dist/ballitfront/**/*', 'dist-electron/**/*'], linux.target 'AppImage', win.target 'nsis', mac.target 'dmg', extraMetadata.main 'dist-electron/electron/main.js'.",
+    "Crear .gitignore incluyendo: node_modules/, dist/, dist-electron/, *.env, .env.local.",
+    "Crear src/assets/ vacío con .gitkeep para que el directorio exista."
+  ],
+  "acceptance_criteria": [
+    "npm install completa sin errores de peer dependencies (usar --legacy-peer-deps si hay conflictos menores de ng2-charts).",
+    "ng build completa sin errores de TypeScript (aunque produzca app mínima con solo index.html).",
+    "El archivo dist/ballitfront/index.html existe después del build."
+  ],
+  "verification": [
+    "cd /home/noriega/Documents/coding/pmc/BallItFront && npm install --legacy-peer-deps 2>&1 | tail -5",
+    "cd /home/noriega/Documents/coding/pmc/BallItFront && npm run build 2>&1 | tail -20"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

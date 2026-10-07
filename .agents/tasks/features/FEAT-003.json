@@ -1,0 +1,30 @@
+{
+  "id": "FEAT-003",
+  "type": "feat",
+  "description": "Componentes compartidos reutilizables (phone-frame, action-bar, verdict-chip, angle-badge, streak-badge, shot-selector, metric-card, advice-card, skeleton-overlay). Son los building blocks de todas las pantallas. Depende de FEAT-002 (modelos y lógica pura). Independiente de FEAT-004 (pantallas).",
+  "status": "pending",
+  "steps": [
+    "Crear src/app/components/phone-frame/phone-frame.component.ts: standalone, selector 'app-phone-frame', template con <div class='phone-frame'><ng-content /></div>, styles: .phone-frame { max-width: 430px; margin: 0 auto; min-height: 100vh; background: #fff; position: relative; overflow-x: hidden; display: flex; flex-direction: column; }.",
+    "Crear src/app/components/action-bar/action-bar.component.ts: standalone, selector 'app-action-bar', inputs: primaryLabel (string), secondaryLabel (string|null), loading (boolean). Outputs: primaryClick, secondaryClick. Template: barra fija bottom con botón principal brand-orange (min-height 52px, border-radius 999px, font-size 16px, font-weight 600) y botón secundario opcional. Cuando loading=true, muestra spinner dentro del botón y deshabilita.",
+    "Crear src/app/components/verdict-chip/verdict-chip.component.ts: standalone, selector 'app-verdict-chip', input: verdict ('bueno'|'dudoso'|'malo'). Template: <span> con icono emoji (🟢/🟡/🔴) + texto ('Buena técnica'/'Puede mejorar'/'Técnica deficiente'), coloreado con getVerdictColor() de score.ts. Siempre icono + texto (nunca solo color). Usar NgClass para el color.",
+    "Crear src/app/components/angle-badge/angle-badge.component.ts: standalone, selector 'app-angle-badge', inputs: angle (number), label (string, default 'Apertura del codo'). Template: pill/badge con el label, el valor en grados, y color de fondo semáforo según umbrales de score.ts. Texto blanco sobre fondo de color.",
+    "Crear src/app/components/streak-badge/streak-badge.component.ts: standalone, selector 'app-streak-badge', input: streak (number). Template: '🔥 {streak} días' en un pill naranja. Si streak es 0, mostrar '🔥 Empieza hoy'.",
+    "Crear src/app/components/shot-selector/shot-selector.component.ts: standalone, selector 'app-shot-selector', input: shots (Shot[]), output: shotSelected (EventEmitter<number>), input: selectedIdx (number). Template: fila horizontal scrollable de círculos numerados (1, 2, 3...) con badge de veredicto (coloreado) en cada uno. El seleccionado tiene borde brand-orange y fondo suave.",
+    "Crear src/app/components/metric-card/metric-card.component.ts: standalone, selector 'app-metric-card', inputs: title (string), value (string|number), unit (string), phrase (string), verdict ('bueno'|'dudoso'|'malo'|null). Template: tarjeta blanca border-radius 16px, sombra suave, título en navy, valor grande, unidad pequeña, frase en gris, VerdictChip al fondo si verdict no es null. Importa VerdictChipComponent.",
+    "Crear src/app/components/advice-card/advice-card.component.ts: standalone, selector 'app-advice-card', inputs: advice (string), tips (string[]). Template: tarjeta con encabezado '💡 Puedes mejorar esto' en navy, texto del advice, botón '▼ Intenta esto' que expande/colapsa lista de tips. Usar signal o booleano para el estado abierto/cerrado.",
+    "Crear src/app/components/skeleton-overlay/skeleton-overlay.component.ts: standalone, selector 'app-skeleton-overlay', inputs: frames (FrameData[]), arm ('right'|'left'), videoSrc (string), showSkeleton (boolean, default true), showAngles (boolean, default true), showTrail (boolean, default false). El componente renderiza: <div style='position:relative'> con un <video #videoEl> y un <canvas #canvasEl style='position:absolute;top:0;left:0;pointer-events:none'> superpuesto. En AfterViewInit: inicializa OverlayRenderer(canvasEl). Registra requestVideoFrameCallback (con fallback a requestAnimationFrame si no está disponible) para sincronizar el dibujo: en cada callback, encuentra el FrameData más cercano al currentTime del video, llama overlay.draw(frame, arm, showSkeleton, showAngles, showTrail). Al cambiar videoSrc, recarga el video. Método público seekToFrame(frameIndex: number) para ir al frame del peak. Inputs con setter usando OnChanges. Controls del video: play/pause, progress bar encima del canvas (z-index alto). Tres toggles de capas (Esqueleto, Ángulos, Estela) debajo del video.",
+    "Asegurarse de que todos los componentes en src/app/components/ usan 'standalone: true', importan CommonModule o los directivos específicos de Angular (NgIf, NgFor, NgClass) según sea necesario, y exportan el componente. No usar NgModules."
+  ],
+  "acceptance_criteria": [
+    "npm run build completa sin errores después de agregar los componentes.",
+    "skeleton-overlay usa requestVideoFrameCallback con fallback a requestAnimationFrame.",
+    "Ningún componente inyecta HttpClient.",
+    "OverlayRenderer se instancia en el componente, no se importa como servicio Angular.",
+    "Todos los componentes tienen standalone: true."
+  ],
+  "verification": [
+    "cd /home/noriega/Documents/coding/pmc/BallItFront && npm run build 2>&1 | tail -30"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}
